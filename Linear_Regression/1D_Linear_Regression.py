@@ -9,7 +9,7 @@ Created on Wed Feb  6 12:34:21 2019
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_regression
-
+from sklearn.linear_model import LinearRegression
 
 plt.style.use("seaborn")
 
@@ -17,7 +17,6 @@ plt.style.use("seaborn")
 
 # Generate random data for use
 X, y = make_regression(n_samples=100, n_features=1, noise = 50)
-
 
 # Plot data to see what it looks like
 plt.scatter(X, y)
@@ -31,27 +30,64 @@ def grad_desc(X, y):
     :returns: a, b
     """
     
+    return None
+    
     
 def linear_algebra(X, y):
     """
-    Attempts to find the optimal values for a, b for the relationship between X and y for the equation `y = aX + b`
-    using linear algebra.
+    Fits a linear regression to data to predict the experimental outcome.
     
-    :returns: a, b
+    x_i: Input, numpy array, list or series.
+    y_i: Observed output, 
+    
+    Note: x_i and y_i must be equal.
+    
+    Returns the predicted/estimated slope and intercept of the regression in the form of a list:
+    
+    list: [slope, intercept]
     """
     
+    # Convert to np array
+    x_i = np.array(X)
+    y_i = np.array(y)
     
-def direct_calculation(X, y):
-    """
-    Attempts to find the optimal values for a, b for the relationship between X and y for the equation `y = aX + b`
-    using equations for a and b.
+    # First we'll calculate n
+    n = len(x_i)
     
-    :returns: a, b
-    """
-    a = ((X*y).mean() - (X.mean()*y.mean()))/((X**2).mean()-(X.mean())**2)
-    b = (y.mean()*(X**2).mean() - X.mean()*(X*y).mean())/((X**2).mean()-(X.mean())**2)
+    # Check that x_i and y_i are the same length
+    try: 
+        n == len(y_i)
+    except:
+        print("Error, the lengths of x_i and y_i are not equivalent")
     
-    return a, b
+    # Calculate the sums as required
+    sum_x = x_i.sum()
+    sum_y = y_i.sum()
+    sum_xy = x_i.dot(y_i)
+    sum_xx = sum(x_i**2)
+    
+    # Solve for Ax=b => x=A^{-1}b
+    
+    # Assemble Matrix A
+    A = np.matrix("{}, {}; {}, {}".format(n, sum_x, sum_x, sum_xx))
+    
+    # Calculate A^-1
+    try: A_inv = A.I
+    except: print("Matrix has no inverse")
+    
+    # Assemble vector b
+    b = np.matrix("{}; {}".format(sum_y, sum_xy))
+    
+    # Calculate x
+    x = A_inv * b
+    
+    # Convert formats
+    slope = float(x[1])
+    intercept = float(x[0])
+    
+    # Return as DataFrame
+    return slope, intercept
+
 
 def plot_line(X, y, param_dict):
     """
@@ -67,26 +103,27 @@ def plot_line(X, y, param_dict):
     dep_var = np.linspace(start=X.min(), stop=X.max(), num=200)
     dict_keys = list(param_dict.keys())
     
-    plt.scatter(X, y)
+    plt.scatter(X, y, alpha = 0.7)
     for key in dict_keys:
         a, b = param_dict[key]
-        plt.plot(dep_var, (a*dep_var)+b, label=key)
+        plt.plot(dep_var, (a*dep_var)+b, label=key, alpha = 0.8)
     plt.legend()
     plt.show()
     
     return
-    
-    
 
-
-
-# Calculate different values for a and b
-a, b = direct_calculation(X, y)
+lm = LinearRegression()    
+lm.fit(X, y)
 
 # Create parameter dictionary
-param_dict = {"direct_calc": [a, b]}
+param_dict = {"direct_calc": list(direct_calculation(X, y)),
+              "linear_algebra": list(linear_algebra(X[:, 0], y)),
+              "sklearn": [lm.coef_[0], lm.intercept_]}
 
 plot_line(X, y, param_dict)
+
+
+
 
 
 
