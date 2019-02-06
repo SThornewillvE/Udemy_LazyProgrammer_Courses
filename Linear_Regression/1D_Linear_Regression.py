@@ -22,15 +22,37 @@ X, y = make_regression(n_samples=100, n_features=1, noise = 50)
 plt.scatter(X, y)
 plt.show()  # We can see that there is a slight correlation, but it is not very strong
 
-def grad_desc(X, y):
+def grad_desc(X, y, alpha=0.1, steps=1000):
     """
     Attempts to find the optimal values for a, b for the relationship between X and y for the equation `y = aX + b`
     using the gradient descent algorithm.
     
+    Note that alpha is equal to the learning rate and steps are the number of steps in the descent.
+    
     :returns: a, b
     """
+    # Check that x_i and y_i are the same length
+    try: 
+        len(X[:, 0]) == len(y)
+    except:
+        print("Error, the lengths of x_i and y_i are not equivalent")
+        return
     
-    return None
+    # Initialize random values for a and b
+    a = np.random.randint(0, 100)
+    b = np.random.randint(0, 100)
+    
+    for i in range(steps):
+        # Find loss
+        
+        d_a = ((y-a*X[:, 0]-b)*-2*X[:, 0]/(len(y))).sum()
+        d_b = ((y-a*X[:, 0]-b)*-2/(len(y))).sum()
+         
+        # Update values
+        a -= alpha * d_a
+        b -= alpha * d_b
+    
+    return a, b
     
     
 def linear_algebra(X, y):
@@ -59,6 +81,7 @@ def linear_algebra(X, y):
         n == len(y_i)
     except:
         print("Error, the lengths of x_i and y_i are not equivalent")
+        return
     
     # Calculate the sums as required
     sum_x = x_i.sum()
@@ -73,7 +96,9 @@ def linear_algebra(X, y):
     
     # Calculate A^-1
     try: A_inv = A.I
-    except: print("Matrix has no inverse")
+    except: 
+        print("Matrix has no inverse")
+        return
     
     # Assemble vector b
     b = np.matrix("{}; {}".format(sum_y, sum_xy))
@@ -116,7 +141,7 @@ lm = LinearRegression()
 lm.fit(X, y)
 
 # Create parameter dictionary
-param_dict = {"direct_calc": list(direct_calculation(X, y)),
+param_dict = {"gradient_descent": list(grad_desc(X, y)),
               "linear_algebra": list(linear_algebra(X[:, 0], y)),
               "sklearn": [lm.coef_[0], lm.intercept_]}
 
