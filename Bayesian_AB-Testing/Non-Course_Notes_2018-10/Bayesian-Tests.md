@@ -19,6 +19,7 @@ There are multiple guides that can be used for bayesian inference:
 * [PyData](https://www.youtube.com/watch?v=PSqtcNZDj4A)
 * [Medium](https://medium.com/@thibalbo/coding-bayesian-ab-tests-in-python-e89356b3f4bd)
 * [Bayesian Methods for Hackers](https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers)
+* [Classical A/B Testing](https://towardsdatascience.com/the-math-behind-a-b-testing-with-example-code-part-1-of-2-7be752e1d06f)
 
 When doing bayesian AB testing, people tend to use their priors to create a beta-distribution which they then sample from to create a distribution. These distributions can be analysed in the same way that we'd analyse the gaussian pdfs in frequentist AB testing.
 
