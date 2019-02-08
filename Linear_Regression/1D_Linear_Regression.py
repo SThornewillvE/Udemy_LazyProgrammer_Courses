@@ -10,6 +10,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_regression
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+
+# Custom packages
+from R_sq import R_sq_eval
 
 plt.style.use("seaborn")
 
@@ -125,13 +129,19 @@ def plot_line(X, y, param_dict):
     :returns:
     """
     
-    dep_var = np.linspace(start=X.min(), stop=X.max(), num=200)
+    dep_var = np.linspace(start=X.min(), stop=X.max(), num=len(y))
     dict_keys = list(param_dict.keys())
     
     plt.scatter(X, y, alpha = 0.7)
     for key in dict_keys:
         a, b = param_dict[key]
-        plt.plot(dep_var, (a*dep_var)+b, label=key, alpha = 0.8)
+        y_pred = (a*X[:, 0])+b
+        r2 = R_sq_eval(y, y_pred)
+        
+        if key == 'sklearn':
+            r2 = r2_score(y, y_pred)
+        
+        plt.plot(dep_var, (a*dep_var + b), label="{}, r sq; {}".format(key, r2), alpha = 0.8)
     plt.legend()
     plt.show()
     
@@ -143,7 +153,8 @@ lm.fit(X, y)
 # Create parameter dictionary
 param_dict = {"gradient_descent": list(grad_desc(X, y)),
               "linear_algebra": list(linear_algebra(X[:, 0], y)),
-              "sklearn": [lm.coef_[0], lm.intercept_]}
+              "sklearn": [lm.coef_[0], lm.intercept_],
+              "average": [0, y.mean()]}
 
 plot_line(X, y, param_dict)
 
