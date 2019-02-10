@@ -41,7 +41,7 @@ def create_const(X):
     return X_new
     
 
-def grad_desc(X, y, alpha=0.1, steps=1000):
+def grad_desc(X, y, alpha=0.0001, steps=1000):
     """
     Attempts to find the optimal values Theta for the relationship between X and y for the equation `y = X*Theta`
     using the gradient descent algorithm.
@@ -60,9 +60,18 @@ def grad_desc(X, y, alpha=0.1, steps=1000):
         return
     
     # Initialize array for Theta
-    Theta = np.zeros((len(y), 1))
+    Theta = np.array([100, 100, 100])
     
-    # TODO Implement Gradient Descent Algorithm for Multiple Linear Regression
+    for i in range(steps):
+        
+        # Find prediction
+        y_pred = np.matmul(X, Theta)
+        
+        # Find loss
+        loss = y_pred - y 
+        
+        # Update weights
+        Theta = Theta - (alpha * np.matmul(X.T, loss))  # X.T * loss is the gradient
     
     return Theta
     

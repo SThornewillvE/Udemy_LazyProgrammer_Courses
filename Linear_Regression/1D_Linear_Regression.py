@@ -35,6 +35,10 @@ def grad_desc(X, y, alpha=0.1, steps=1000):
     
     :returns: a, b
     """
+    
+    # Find number of observations
+    n = len(y)
+    
     # Check that x_i and y_i are the same length
     if n != len(X):
         print("Error, X and y do not contain an equal number of observations")
