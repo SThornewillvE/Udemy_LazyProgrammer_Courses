@@ -36,10 +36,8 @@ def grad_desc(X, y, alpha=0.1, steps=1000):
     :returns: a, b
     """
     # Check that x_i and y_i are the same length
-    try: 
-        len(X[:, 0]) == len(y)
-    except:
-        print("Error, the lengths of x_i and y_i are not equivalent")
+    if n != len(X):
+        print("Error, X and y do not contain an equal number of observations")
         return
     
     # Initialize random values for a and b
@@ -81,10 +79,8 @@ def linear_algebra(X, y):
     n = len(x_i)
     
     # Check that x_i and y_i are the same length
-    try: 
-        n == len(y_i)
-    except:
-        print("Error, the lengths of x_i and y_i are not equivalent")
+    if n != len(X):
+        print("Error, X and y do not contain an equal number of observations")
         return
     
     # Calculate the sums as required

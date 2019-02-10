@@ -18,8 +18,6 @@ from R_sq import R_sq_eval
 
 plt.style.use("seaborn")
 
-# Define 
-
 # Generate random data for use
 X, y = make_regression(n_samples=100, n_features=2, noise = 0)
 
@@ -57,9 +55,7 @@ def grad_desc(X, y, alpha=0.1, steps=1000):
     n = len(y)
     
     # Check that x_i and y_i are the same length
-    try: 
-        n == len(X)
-    except:
+    if n != len(X):
         print("Error, X and y do not contain an equal number of observations")
         return
     
@@ -87,9 +83,7 @@ def linear_algebra(X, y):
     n = len(y)
     
     # Check that x_i and y_i are the same length
-    try: 
-        n == len(X)
-    except:
+    if n != len(X):
         print("Error, X and y do not contain an equal number of observations")
         return
     
