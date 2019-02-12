@@ -10,6 +10,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_classification
 
+# Import custom packages
+from cross_entropy import cross_entropy_eval
+
 plt.style.use("seaborn")
 
 # Generate random data for use
@@ -61,10 +64,18 @@ linspace_X = np.linspace(-5, 5, 200)
 plt.plot(linspace_X, sigmoid(linspace_X))
 plt.show()
 
+# Calculate Naive y_pred
+y_pred = np.array([1 if i > 0.5 else 0 for i in sigmoid(X)])
+
 # By taking a sigmoid of the data, we can already do some basic classification of the data
-plt.scatter(X, [1 if i > 0.5 else 0 for i in sigmoid(X)], label="Classification")
-plt.scatter(X, sigmoid(X), label = "Probability")
+plt.scatter(X, y_pred, label="Classification")
+plt.scatter(X, sigmoid(X), label = "Sigmoid")
+plt.plot(linspace_X, sigmoid(linspace_X), label = "Sigmoid")
 plt.legend()
 plt.title("Classification of Points via Naive Logistic Regression (No Weights)")
 plt.xlabel("Accuracy Score: {}".format(accuracy_score(y, [1 if i > 0.5 else 0 for i in sigmoid(X)])))
 plt.show()
+
+# Find loss from cross entropy
+loss = cross_entropy_eval(y, y_pred)
+
