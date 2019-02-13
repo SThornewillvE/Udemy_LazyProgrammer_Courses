@@ -55,7 +55,37 @@ def accuracy_score(y, y_pred):
                 True_Neg += 1
     
     return (True_Pos + True_Neg) / len(y)
-        
+
+def grad_desc(X, y, alpha=0.01, steps=10000):
+    """
+    Performs gradient descent on a randomly initialized set of variables to predict y based on X using logistic regression,
+    where y is a binary output.
+    
+    Alpha is the learning rate and the steps is the number of iterations done for this algorithm
+    
+    :returns: Theta
+    """
+    
+    Theta = np.random.randint(0, 100, size=X.shape[1])
+    
+    for i in range(steps):
+        Theta = Theta - (alpha * X.T.dot(y - sigmoid(X.dot(Theta))))
+        y_pred = sigmoid(X.dot(Theta))
+        if i % 1000:
+            print("Accuracy: {}".format(accuracy_score(y, y_pred)))
+            
+    return Theta
+
+def add_bias(X):
+    """
+    Adds bias term to X as a column of 1s.
+    
+    :returns: X
+    """    
+    
+    X = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
+    
+    return X
 
 # Create linear space of X
 linspace_X = np.linspace(-5, 5, 200)
@@ -64,13 +94,17 @@ linspace_X = np.linspace(-5, 5, 200)
 plt.plot(linspace_X, sigmoid(linspace_X))
 plt.show()
 
+# Calculate random weights
+Theta = np.random.randint(0, 100, size=X.shape[1])
+
 # Calculate Naive y_pred
-y_pred = np.array([1 if i > 0.5 else 0 for i in sigmoid(X)])
+y_pred = sigmoid(X.dot(Theta))
+classification = np.array([0 if i < 0.5 else 1 for i in y_pred])
 
 # By taking a sigmoid of the data, we can already do some basic classification of the data
-plt.scatter(X, y_pred, label="Classification")
-plt.scatter(X, sigmoid(X), label = "Sigmoid")
-plt.plot(linspace_X, sigmoid(linspace_X), label = "Sigmoid")
+plt.scatter(X, y_pred, label = "Predicted")
+plt.scatter(X, y, label="Reality")
+plt.plot(linspace_X, sigmoid(linspace_X * Theta), label = "Sigmoid", alpha=0.7)
 plt.legend()
 plt.title("Classification of Points via Naive Logistic Regression (No Weights)")
 plt.xlabel("Accuracy Score: {}".format(accuracy_score(y, [1 if i > 0.5 else 0 for i in sigmoid(X)])))
@@ -78,4 +112,20 @@ plt.show()
 
 # Find loss from cross entropy
 loss = cross_entropy_eval(y, y_pred)
+
+# Add bias term to X
+X = add_bias(X)  # it was found the bias term doesnt help with this dataset
+
+# Perform Gradient Descent
+Theta = grad_desc(X, y, alpha=0.0001)
+y_pred = sigmoid(X.dot(Theta))
+
+# PLot Fitted Curve
+plt.scatter(X[:, 0], y_pred, label = "Predicted")
+plt.scatter(X[:, 0], y, label="Reality")
+plt.plot(linspace_X, sigmoid(linspace_X * Theta[0]), label = "Sigmoid", alpha=0.7)
+plt.legend()
+plt.title("Classification of Points via Naive Logistic Regression With Weights")
+plt.xlabel("Accuracy Score: {}".format(accuracy_score(y, [1 if i > 0.5 else 0 for i in sigmoid(X)])))
+plt.show()
 
