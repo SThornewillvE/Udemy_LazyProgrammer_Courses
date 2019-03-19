@@ -56,20 +56,31 @@ def accuracy_score(y, y_pred):
     
     return (True_Pos + True_Neg) / len(y)
 
-def grad_desc(X, y, alpha=0.01, steps=10000):
+def grad_desc(X, y, alpha=0.01, steps=10000, regularisation=None, lmbd=None):
     """
     Performs gradient descent on a randomly initialized set of variables to predict y based on X using logistic regression,
     where y is a binary output.
     
     Alpha is the learning rate and the steps is the number of iterations done for this algorithm
     
+    Note that if regularisation is to be performed then lambda must also be defined.
+    
     :returns: Theta
     """
+    
+    if not (regularisation and lmbd):
+        print("Both lambda and regularisation type need to be defined.")
+        return
     
     Theta = np.random.randint(0, 100, size=X.shape[1])
     
     for i in range(steps):
-        Theta = Theta - (alpha * X.T.dot(y - sigmoid(X.dot(Theta))))
+        if regularisation == 'L2':
+            Theta = Theta - (alpha * (X.T.dot(y - sigmoid(X.dot(Theta)))) + lmbd*Theta) 
+        elif regularisation == 'L1':
+            Theta = Theta - (alpha * (X.T.dot(y - sigmoid(X.dot(Theta)))) + lmbd*np.sign(Theta)) 
+        else:
+            Theta = Theta - (alpha * X.T.dot(y - sigmoid(X.dot(Theta))))
         y_pred = sigmoid(X.dot(Theta))
         if i % 1000:
             print("Accuracy: {}".format(accuracy_score(y, y_pred)))
