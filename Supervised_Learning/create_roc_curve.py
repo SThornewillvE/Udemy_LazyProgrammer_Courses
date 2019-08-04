@@ -10,36 +10,22 @@ import matplotlib.pyplot as plt
 
 from sklearn.datasets import make_classification
 from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import roc_curve
+from sklearn.metrics import confusion_matrix, roc_auc_score
 
 plt.style.use("seaborn")
 
 
-def precision_and_recall(y, y_pred):
+def precision_and_recall(y, y_thresh):
+
+    # Get confusion Matrix    
+    cm = confusion_matrix(y, y_thresh).T
     
-    tp = 0
-    fp = 0
-    fn = 0
+    # From confusion matrix, get sensitivity and specificity
     
-    for i in range(len(y)):
-        if y[i] == y_pred[i] and y[i] == 1:
-            tp+=1
-        elif y[i] == y_pred[i] and y[i] == 0:    
-            pass
-        elif y[i] > y_pred[i]:
-            fn+=1
-        else:
-            fp+=1
+    tp_rate = cm[0, 0]/(cm[0, 0] + cm[1, 0])  # Same as Precision and/or Sensitivity
+    fp_rate = cm[0, 1]/(cm[0, 1] + cm[1, 1])  # Same as 1 - Specificity/Recall
     
-    try: 
-        precision = tp/(tp+fp)
-    except ZeroDivisionError: precision = 0
-    
-    try: 
-        recall = tp/(tp+fn)
-    except ZeroDivisionError: recall = 0
-    
-    return precision, recall
+    return tp_rate, fp_rate
 
 
 # Get straight line for ROC
@@ -59,19 +45,33 @@ clf.fit(X, y)
 y_pred = clf.predict(X)
 p_pred = clf.predict_proba(X)[:, 0]
 
-precision_over_threshold = []
-recall_over_threshold = []
+# Initialize values
+x_vec = []
+y_vec = []
 
-for threshold in np.linspace(0, 1, 200)[1:200]:
+# Look over thresholds to find true positive and false positive rates
+for threshold in np.linspace(0, 1, 200):
 
-        y_pred2 = np.array([int(i) for i in p_pred[:, 0] < threshold])
+        y_thresh = np.array([int(i) for i in p_pred < threshold])
         
-        prec, rec = precision_and_recall(y_pred, y_pred2)
-        
-        precision_over_threshold.append(prec)
-        recall_over_threshold.append(rec)
+        tp_rate, fp_rate = precision_and_recall(y, y_thresh)
 
+        # Save Values        
+        x_vec.append(fp_rate)
+        y_vec.append(tp_rate)
 
-plt.plot(ones, ones)
-plt.plot(precision_over_threshold, recall_over_threshold)
+# Convert to np array
+x_vec = np.array(x_vec)
+y_vec = np.array(y_vec)
+
+# Get AUC
+auc = 1 - roc_auc_score(y, p_pred)
+
+# Plot
+plt.plot(ones, ones, label = "w/ all scores 0.5")
+plt.plot(x_vec, y_vec, label = "ROC for model scores")
+plt.title("ROC curve for predicted probabilities from model \n AUC = {}".format(round(auc, 3)))
+plt.xlabel("False Positive Rate (1 - specificity)")
+plt.ylabel("True Positive Rate (sensitvity)")
+plt.legend()
 plt.show()
