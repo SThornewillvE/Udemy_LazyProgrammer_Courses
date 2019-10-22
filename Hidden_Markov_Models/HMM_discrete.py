@@ -12,6 +12,7 @@ Created on Fri Oct 18 14:45:54 2019
 import numpy as np
 import matplotlib.pyplot as plt
 
+from tqdm import trange
 
 # ======================================================================================================================
 # Define HMM
@@ -50,11 +51,11 @@ class hidden_markov_model:
         self.B = self.random_normalised(self.M, V)  # Likelihood of observing V given state M
         costs = []  # Create list to log costs
         
-        for epoch in range(max_iter):
-            
-            # Print summary every 10 epochs
-            if epoch % 10 == 0:
-                print("epoch: {}".format(epoch))
+        print("Initial A:\n", self.A)
+        print("Initial B:\n", self.B)
+        print("Initial pi:", self.pi)
+        
+        for epoch in trange(max_iter):
                 
             # Initialize list for alphas, betas and probabilities
             alphas = []
@@ -97,7 +98,7 @@ class hidden_markov_model:
             costs.append(cost)
                 
             # Reestimate pi and B using alpha and beta
-            self.pi = np.sum(np.array([(alphas[n][0] * betas[n][0])/P[n] for n in range(N)])) / N
+            self.pi = np.array([(alphas[n][0] * betas[n][0])/P[n] for n in range(N)]).sum(axis=0)/N
             
             den_1 = np.zeros((self.M, 1))
             den_2 = np.zeros((self.M, 1))
@@ -134,14 +135,12 @@ class hidden_markov_model:
             self.A = a_num / den_1
             self.B = b_num / den_2
             
-        print("A:", self.A)
-        print("B:", self.B)
-        print("pi:", self.pi)
+        print("A:\n", self.A)
+        print("B:\n", self.B)
+        print("pi:\n", self.pi)
             
-        
-        # Show plot of costs
-        plt.plot(costs)
-        plt.show()
+        # Save costs for plot
+        self.costs = costs
             
             
     def likelihood(self, x):
@@ -199,6 +198,10 @@ class hidden_markov_model:
         
         return X / X.sum(axis=1, keepdims=True)
     
+    def plot(self):
+        plt.plot(self.costs)
+        plt.show()
+    
     
 # ======================================================================================================================
 # Main
@@ -219,6 +222,9 @@ hmm.fit(X, rand_seed = 42)
 L = hmm.log_likelihood_multi(X).sum()
 print("LL with fitted params:", L)
 
+print("Best state sequence for using fitted params:\n", X[0])
+print(hmm.get_state_sequence(X[0]))
+
 # try true values
 hmm.pi = np.array([0.5, 0.5])
 hmm.A = np.array([[0.1, 0.9], [0.8, 0.2]])
@@ -226,5 +232,5 @@ hmm.B = np.array([[0.6, 0.4], [0.3, 0.7]])
 L = hmm.log_likelihood_multi(X).sum()
 print("LL with true params:", L)
 
-print("Best state sequence for:", X[0])
+print("Best state sequence for using optimal/real params:\n", X[0])
 print(hmm.get_state_sequence(X[0]))
