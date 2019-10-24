@@ -52,19 +52,17 @@ class forward:
         
         # Check for base case
         if t == 1:
-            return self.pi[i] * self.B[self.x[t], i]
+            return self.pi[i] * self.B[i, self.x[t]]
         
         # Otherwise continue as normal
         else:
-            
-            x_t_giv_z_t = self.B[x[t], i]
-            
             sum_alphas = 0
             
             for i in range(M):
-                sum_alphas += A[self.x[t], self.x[t-1]] * self.alpha(t-1, i)
+                for j in range(M):
+                    sum_alphas += A[i, j] * self.alpha(t-1, i)
             
-            return x_t_giv_z_t * sum_alphas
+            return sum_alphas * self.B[self.x[t], i]
         
             
     def get_px(self, x):
