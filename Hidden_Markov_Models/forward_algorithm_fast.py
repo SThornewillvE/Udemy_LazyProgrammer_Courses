@@ -56,14 +56,11 @@ class forward:
         # Get the rest of the alphas
         for t in range(1, T):
             
-            alpha = np.zeros((1, 2))
-            b_ik = B[:, x[t]]
+            alpha = alphas[t-1].dot(self.A)
             
-            for i in range(M):
-                alpha += A[i] * alphas[t-1]
+            alphas[t] = alpha * self.B[:, x[t]]
             
-            alphas[t] = alpha * b_ik
-               
+            if t == T-1: print("Alphas:", alphas)
             
         return alphas[-1].sum()
 
