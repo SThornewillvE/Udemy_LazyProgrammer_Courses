@@ -48,8 +48,7 @@ class forward:
             :M: Int. Number of unique hidden states
         """
         
-        if i == 0:
-            print(t, i)
+        print("t, i: ({}, {})".format(t, i))
         
         # Check for base case
         if t == 1:
@@ -105,7 +104,7 @@ with open("./X.pkl", "rb") as f:
 
 # Get random observation from X
 i = np.random.randint(len(X))
-x = X[i][:2]
+x = X[i][:3]
 
 # Define Markov Model
 A = np.array([[0.1, 0.9], [0.8, 0.2]])
