@@ -6,6 +6,10 @@ Created on Tue Oct 22 16:40:46 2019
 
 Note: This algorithm is implemented in exponential time, this is why it was not implemented as such in the lectures.
       As such, try not to use times above about 15
+      
+      Also, ---this algorithm does not produce correct results--- I could check it but the fast forward algorithm is
+      not only faster but it *does* produce the correct results. Therefore, I will not continue with this algorithm in
+      the interest of time.
 """
 
 # ======================================================================================================================
@@ -56,13 +60,12 @@ class forward:
         
         # Otherwise continue as normal
         else:
-            sum_alphas = 0
+            alpha_t = np.zeros((1, self.M))
             
-            for i in range(M):
-                for j in range(M):
-                    sum_alphas += A[i, j] * self.alpha(t-1, i)
+            for m in range(M):
+                    alpha_t[:, m] = (self.A[:, m] * self.alpha(t-1, m)).sum()
             
-            return sum_alphas * self.B[self.x[t], i]
+            return alpha_t * self.B[i, self.x[t-1]]
         
             
     def get_px(self, x):
@@ -87,7 +90,7 @@ class forward:
         p_x = 0
         
         for i in range(M):
-            p_x += self.alpha(T-1, i)
+            p_x += self.alpha(T, i).sum()
             
         return p_x
 
@@ -102,7 +105,7 @@ with open("./X.pkl", "rb") as f:
 
 # Get random observation from X
 i = np.random.randint(len(X))
-x = X[i][:3]
+x = X[i][:2]
 
 # Define Markov Model
 A = np.array([[0.1, 0.9], [0.8, 0.2]])

@@ -75,7 +75,7 @@ with open("./X.pkl", "rb") as f:
 
 # Get random observation from X
 i = np.random.randint(len(X))
-x = X[i][:3]
+x = X[i]
 
 # Define Markov Model
 A = np.array([[0.1, 0.9], [0.8, 0.2]])
