@@ -294,18 +294,3 @@ L = hmm.log_likelihood_multi(signals).sum()
 print("LL with fitted params:", L)
 
 hmm.plot()
-
-
-#print("Best state sequence for using fitted params:\n", X[0])
-#print(hmm.get_state_sequence(X[0]))
-#
-## try true values
-#hmm.pi = np.array([0.5, 0.5])
-#hmm.A = np.array([[0.1, 0.9], [0.8, 0.2]])
-#hmm.B = np.array([[0.6, 0.4], [0.3, 0.7]])
-#L = hmm.log_likelihood_multi(X).sum()
-#print("LL with true params:", L)
-#
-#print("Best state sequence for using optimal/real params:\n", X[0])
-#print(hmm.get_state_sequence(X[0]))
-
